@@ -1,77 +1,142 @@
 'use strict';
-const path = require('path');  // built into node
-// var _ = require('lodash');
+/**
+ * ---------------------------------------------------
+ * Table of Contents
+ * ---------------------------------------------------
+ *  > Require NPM(s)
+ *  > Entry, Output and DevServer
+ *    (config)
+ *  > Loaders
+ *  > Plugins
+ *  > Final Export
+ *
+ *                ~ Jreaming of better Dev | JREAM.com
+ * ---------------------------------------------------
+ */
 
-const PATH_OUTPUT = path.resolve(__dirname, './dist');
-const PATH_SOURCE = path.join(__dirname, './src')
 
-// for SASS
-const autoprefixer = require('autoprefixer')
+/**
+ * ---------------------------------------------------
+ *  Require NPM(s)
+ * ---------------------------------------------------
+ */
+const path = require('path');
+const _ = require('lodash');
+
+const autoprefixer      = require('autoprefixer')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-const sassLoaders = [
-  'css-loader',
-  'postcss-loader',
-  'sass-loader?indentedSyntax=sass&includePaths[]=' + path.resolve(__dirname, './src')
-]
-
-// main config
-const config = {
-
-  // str | obj | arr
-  // Where webpack starts exec
-  entry: {
-    // src/index.js includes imports!
-    app: ['./src/index']
-  }
-  [
-    './entry.js'
-  ],
-
-  modules: {
-    devtool: 'source-map',
-
-    rules: [{
-        test: /\.scss$/,
-        use: [{
-            loader: 'style-loader' // creates style nodes from JS strings
-        }, {
-            loader: 'css-loader' // translates CSS into CommonJS
-        }, {
-            loader: 'sass-loader' // compiles Sass to CSS
-            // , options: {
-            //   includePaths: ['absolute/path/a', 'absolute/path/b']
-            // }
-        }]
+/**
+ * ---------------------------------------------------
+ *  Entry, Output and DevServer
+ *  (config)
+ * ---------------------------------------------------
+ */
+const PATH_SRC = './src';  // [No Trailing Slash]
+const PATH_DIST= './dist'; // [No Trailing Slash]
 
 
-    }] // end of 'rules'
-
-  },
-
-  // Where compilation/results go
-  output: {
+const entry = _.replace('%s/app.js', '%s', PATH_SRC);
+const output = {
     filename: 'bundle.js',
-    path: PATH_OUTPUT,
-    // Where index file is for site
-    publicPath: '/assets',
-    sourceMapFilename: '[file].map'
-  },
-
-  plugins: [
-    // For development (Yea?)
-    new ExtractTextPlugin('[name].css')
-  ],
-  postcss: [
-    autoprefixer({
-      browsers: ['last 2 versions']
-    })
-  ],
-  resolve: {
-    extensions: ['', '.js', '.sass', '.scss'],
-    root: [PATH_SOURCE]
+    path:     path.resolve(__dirname, PATH_DIST),
+    sourceMapFilename: '[file].map',
+    // https://webpack.js.org/configuration/output/#output-publicpath
+    // publicPath: './assets/'
+};
+const devServer = {
+  proxy: {
+    '/': 'http://localhost:3000'
   }
+};
 
-}
 
-module.exports = config;
+/**
+ * ---------------------------------------------------
+ *  Loaders
+ * ---------------------------------------------------
+ */
+const loaders = [
+    // * Place CSS Before SASS Loader
+    // start:CSS
+    {
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            importLoaders: 1
+          }
+        },
+        'postcss-loader'
+      ]
+    }, // end:CSS
+
+    // start:SASS
+    {
+      test: /\.s[ac]ss$/,
+      use: [
+        // *The style-loader/css-loader immediately applies style to DOM
+
+        // creates style nodes from JS strings
+        {loader: 'style-loader'},
+
+        // translates CSS into CommonJS
+        {loader: 'css-loader'},
+
+        // compiles Sass to CSS
+        {
+          loader: 'sass-loader',
+          options: {
+            includePaths: [
+              path.resolve(__dirname, _.replace('%s/stylesheets', '%s', PATH_SRC))
+            ]
+          }
+        }
+
+      ]
+    }, // end:SASS
+
+    // start:HTML
+    {
+      test: /\.html$/,
+      use: [{
+        loader: 'html-loader',
+        options: {
+          attrs: ['img:src', 'link:href']
+        }
+      }]
+    } // end:HTML
+];
+
+
+/**
+ * ---------------------------------------------------
+ *  Plugins
+ * ---------------------------------------------------
+ */
+const plugins = [
+  // For Development
+  new ExtractTextPlugin('[name].css')
+];
+
+
+/**
+ * ---------------------------------------------------
+ *  Final Export
+ * ---------------------------------------------------
+ */
+module.exports = {
+  entry: entry,
+  module: {
+    rules: loaders
+  },
+  output: output,
+  // Slowest for build speeds, for Development
+  devtool: 'source-map',
+  plugins: plugins,
+  devServer: devServer,
+  // Abs path for webpack, module loaders resolve from here
+  // context: __dirname
+};
