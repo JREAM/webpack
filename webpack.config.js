@@ -1,8 +1,9 @@
 'use strict';
 const path = require('path');  // built into node
+// var _ = require('lodash');
 
-// utility
-var _ = require('lodash');
+const PATH_OUTPUT = path.resolve(__dirname, './dist');
+const PATH_SOURCE = path.join(__dirname, './src')
 
 // for SASS
 const autoprefixer = require('autoprefixer')
@@ -19,12 +20,15 @@ const config = {
 
   // str | obj | arr
   // Where webpack starts exec
-  entry: [
+  entry: {
+    // src/index.js includes imports!
+    app: ['./src/index']
+  }
+  [
     './entry.js'
   ],
 
   modules: {
-
     devtool: 'source-map',
 
     rules: [{
@@ -48,7 +52,7 @@ const config = {
   // Where compilation/results go
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, './dist'),
+    path: PATH_OUTPUT,
     // Where index file is for site
     publicPath: '/assets',
     sourceMapFilename: '[file].map'
@@ -65,7 +69,7 @@ const config = {
   ],
   resolve: {
     extensions: ['', '.js', '.sass', '.scss'],
-    root: [path.join(__dirname, './src')]
+    root: [PATH_SOURCE]
   }
 
 }
