@@ -1,0 +1,39 @@
+{
+  "name": "webpack",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "webpack": "2.x"
+  },
+  "description": "Webpack to Configure for SASS and JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JREAM/webpack.git"
+  },
+  "keywords": [
+    "webpack config",
+    "webpack example",
+    "webpack boilerplate",
+    "webpack scss"
+  ],
+  "author": "Jesse Boyer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JREAM/webpack/issues"
+  },
+  "homepage": "https://github.com/JREAM/webpack#readme",
+  "devDependencies": {
+    "autoprefixer": "^6.7.7",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.28.0",
+    "extract-text-webpack-plugin": "^2.1.0",
+    "node-sass": "^4.5.2",
+    "sass-loader": "^6.0.3",
+    "source-map": "^0.5.6",
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.4.2"
+  }
+}
